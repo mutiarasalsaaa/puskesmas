@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Loket{% endblock %}
+{% block page_title %}Dashboard Loket (Pendaftaran){% endblock %}
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card blue">
+      <div class="stat-icon"><i class="bi bi-calendar2-check-fill"></i></div>
+      <div class="stat-info">
+        <div class="stat-number">{{ stats.kunjungan_hari_ini }}</div>
+        <div class="stat-label">Total Kunjungan Hari Ini</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card orange">
+      <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+      <div class="stat-info">
+        <div class="stat-number">{{ stats.menunggu }}</div>
+        <div class="stat-label">Menunggu</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card green">
+      <div class="stat-icon"><i class="bi bi-person-lines-fill"></i></div>
+      <div class="stat-info">
+        <div class="stat-number">{{ stats.total_pasien }}</div>
+        <div class="stat-label">Total Pasien Terdaftar</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-4 mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-list-ul me-2 text-success"></i>Daftar Kunjungan Hari Ini</span>
+        <a href="{{ url_for('rawat_jalan_daftar') }}" class="btn btn-sm btn-primary">
+          <i class="bi bi-plus-lg me-1"></i>Daftarkan Pasien
+        </a>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr><th>No. Antrian</th><th>Nama Pasien</th><th>Poli</th><th>Keluhan</th><th>Status</th><th>Waktu</th></tr>
+            </thead>
+            <tbody>
+              {% for k in kunjungan_list %}
+              <tr>
+                <td><span class="badge bg-primary fs-6">{{ k['no_antrian'] }}</span></td>
+                <td>{{ k['pasien_nama'] }}</td>
+                <td>{{ k['poli'] }}</td>
+                <td>{{ k['keluhan'][:40] if k['keluhan'] else '-' }}</td>
+                <td>
+                  {% if k['status'] == 'menunggu' %}<span class="badge bg-warning text-dark">Menunggu</span>
+                  {% elif k['status'] == 'cek_vital' %}<span class="badge bg-info">Cek Vital</span>
+                  {% elif k['status'] == 'poli' %}<span class="badge bg-primary">Di Poli</span>
+                  {% elif k['status'] == 'selesai' %}<span class="badge bg-success">Selesai</span>
+                  {% endif %}
+                </td>
+                <td>{{ k['created_at'][11:16] }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="6" class="text-center text-muted py-4">Belum ada kunjungan hari ini</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-md-6">
+    <a href="{{ url_for('pasien_tambah') }}" class="btn btn-outline-primary w-100 py-3">
+      <i class="bi bi-person-plus-fill me-2 fs-5"></i>Daftarkan Pasien Baru
+    </a>
+  </div>
+  <div class="col-md-6">
+    <a href="{{ url_for('pasien_list') }}" class="btn btn-outline-secondary w-100 py-3">
+      <i class="bi bi-search me-2 fs-5"></i>Cari Data Pasien
+    </a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+{% block title %}Rekam Medis - {{ kunjungan['pasien_nama'] }}{% endblock %}
+{% block page_title %}Input Rekam Medis{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-person-fill me-2 text-success"></i>Data Pasien
+      </div>
+      <div class="card-body">
+        <div class="text-center mb-3">
+          <div class="patient-avatar">{{ kunjungan['pasien_nama'][0]|upper }}</div>
+          <h6 class="mt-2 mb-0">{{ kunjungan['pasien_nama'] }}</h6>
+          <span class="badge bg-secondary">{{ kunjungan['no_rm'] }}</span>
+        </div>
+        <table class="table table-sm">
+          <tr><th>NIK</th><td>{{ kunjungan['nik'] }}</td></tr>
+          <tr><th>Tgl Lahir</th><td>{{ kunjungan['tanggal_lahir'] }}</td></tr>
+          <tr><th>Jenis Kelamin</th><td>{{ kunjungan['jenis_kelamin'] }}</td></tr>
+          <tr><th>Poli</th><td>{{ kunjungan['poli'] }}</td></tr>
+          <tr><th>No. Antrian</th><td><span class="badge bg-info">{{ kunjungan['no_antrian'] }}</span></td></tr>
+        </table>
+        {% if kunjungan['keluhan'] %}
+        <div class="alert alert-light py-2">
+          <small><strong>Keluhan:</strong><br>{{ kunjungan['keluhan'] }}</small>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if vital %}
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-activity me-2 text-danger"></i>Tanda Vital
+      </div>
+      <div class="card-body">
+        <div class="row g-2 text-center">
+          <div class="col-6">
+            <div class="vital-box">
+              <div class="vital-value">{{ vital['tekanan_darah'] or '-' }}</div>
+              <div class="vital-label">Tekanan Darah</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="vital-box">
+              <div class="vital-value">{{ vital['nadi'] or '-' }}</div>
+              <div class="vital-label">Nadi (bpm)</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="vital-box">
+              <div class="vital-value">{{ vital['suhu'] or '-' }}</div>
+              <div class="vital-label">Suhu (°C)</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="vital-box">
+              <div class="vital-value">{{ vital['saturasi_o2'] or '-' }}%</div>
+              <div class="vital-label">SpO₂</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="vital-box">
+              <div class="vital-value">{{ vital['berat_badan'] or '-' }}</div>
+              <div class="vital-label">BB (kg)</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="vital-box">
+              <div class="vital-value">{{ vital['tinggi_badan'] or '-' }}</div>
+              <div class="vital-label">TB (cm)</div>
+            </div>
+          </div>
+        </div>
+        {% if vital['catatan'] %}
+        <div class="mt-2"><small class="text-muted">{{ vital['catatan'] }}</small></div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-file-medical-fill me-2 text-success"></i>Rekam Medis
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Anamnesis / Riwayat Penyakit</label>
+            <textarea name="anamnesis" class="form-control" rows="3"
+              placeholder="Keluhan utama, riwayat penyakit sekarang, riwayat penyakit dahulu...">{{ rm['anamnesis'] if rm else '' }}</textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Pemeriksaan Fisik</label>
+            <textarea name="pemeriksaan_fisik" class="form-control" rows="3"
+              placeholder="Hasil pemeriksaan fisik...">{{ rm['pemeriksaan_fisik'] if rm else '' }}</textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Diagnosis</label>
+            <textarea name="diagnosis" class="form-control" rows="2"
+              placeholder="Diagnosis utama dan diagnosis banding...">{{ rm['diagnosis'] if rm else '' }}</textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Tindakan / Terapi</label>
+            <textarea name="tindakan" class="form-control" rows="2"
+              placeholder="Tindakan medis yang dilakukan...">{{ rm['tindakan'] if rm else '' }}</textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Resep Obat</label>
+            <textarea name="resep" class="form-control" rows="3"
+              placeholder="Nama obat, dosis, aturan pakai...">{{ rm['resep'] if rm else '' }}</textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Catatan Tambahan</label>
+            <textarea name="catatan" class="form-control" rows="2"
+              placeholder="Catatan lain, anjuran, kontrol, dll...">{{ rm['catatan'] if rm else '' }}</textarea>
+          </div>
+          <hr>
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="submit" name="simpan" value="1" class="btn btn-outline-success">
+              <i class="bi bi-save me-2"></i>Simpan Draft
+            </button>
+            <button type="submit" name="selesai" value="1" class="btn btn-success">
+              <i class="bi bi-check-circle-fill me-2"></i>Simpan &amp; Selesaikan
+            </button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary ms-auto">
+              <i class="bi bi-arrow-left me-2"></i>Kembali
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===================== SHORTCUT ARSIP REKAM MEDIS ===================== -->
+    <div class="card shadow-sm mt-4">
+      <div class="card-header bg-white d-flex align-items-center justify-content-between">
+        <span class="fw-semibold">
+          <i class="bi bi-archive-fill me-2 text-success"></i>Arsip Rekam Medis Pasien Ini
+        </span>
+        <button class="btn btn-sm btn-outline-primary" id="btnMuatArsip" onclick="muatArsipRM()">
+          <i class="bi bi-arrow-clockwise me-1"></i>Muat Arsip
+        </button>
+      </div>
+      <div class="card-body p-0" id="arsipContainer">
+        <div class="text-center text-muted py-4" id="arsipPlaceholder">
+          <i class="bi bi-folder2-open fs-3 d-block mb-2"></i>
+          <small>Klik "Muat Arsip" untuk melihat riwayat rekam medis pasien ini.</small>
+        </div>
+        <div id="arsipContent" style="display:none;">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0 align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-3">Tanggal</th>
+                  <th>Poli</th>
+                  <th>Diagnosis</th>
+                  <th>Tindakan</th>
+                  <th class="text-center">Detail</th>
+                </tr>
+              </thead>
+              <tbody id="arsipTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="arsipLoading" style="display:none;" class="text-center py-4">
+          <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+          <small class="text-muted">Memuat arsip...</small>
+        </div>
+        <div id="arsipEmpty" style="display:none;" class="text-center text-muted py-4">
+          <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+          <small>Belum ada rekam medis sebelumnya untuk pasien ini.</small>
+        </div>
+        <div id="arsipError" style="display:none;" class="text-center text-danger py-4">
+          <i class="bi bi-exclamation-circle fs-3 d-block mb-2"></i>
+          <small>Gagal memuat arsip. Coba lagi.</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Detail Arsip -->
+    <div class="modal fade" id="modalDetailArsip" tabindex="-1" aria-labelledby="modalDetailArsipLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title fw-semibold" id="modalDetailArsipLabel">
+              <i class="bi bi-file-medical me-2 text-primary"></i>Detail Rekam Medis
+            </h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" id="modalDetailArsipBody"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ===================================================================== -->
+
+  </div>
+</div>
+
+<script>
+  const NO_RM = "{{ kunjungan['no_rm'] }}";
+  let arsipSudahDimuat = false;
+
+  function muatArsipRM() {
+    if (arsipSudahDimuat) return;
+
+    document.getElementById('arsipPlaceholder').style.display = 'none';
+    document.getElementById('arsipLoading').style.display = 'block';
+    document.getElementById('arsipContent').style.display = 'none';
+    document.getElementById('arsipEmpty').style.display = 'none';
+    document.getElementById('arsipError').style.display = 'none';
+    document.getElementById('btnMuatArsip').disabled = true;
+
+    fetch('/api/arsip-rm/' + NO_RM)
+      .then(res => {
+        if (!res.ok) throw new Error('Gagal fetch, status: ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        document.getElementById('arsipLoading').style.display = 'none';
+        if (!data || data.length === 0) {
+          document.getElementById('arsipEmpty').style.display = 'block';
+          document.getElementById('btnMuatArsip').disabled = false;
+          return;
+        }
+        const tbody = document.getElementById('arsipTableBody');
+        tbody.innerHTML = '';
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="ps-3"><span class="badge bg-light text-dark border">${row.tanggal || '-'}</span></td>
+            <td>${row.poli || '-'}</td>
+            <td class="text-truncate" style="max-width:160px;" title="${row.diagnosis || ''}">${row.diagnosis || '-'}</td>
+            <td class="text-truncate" style="max-width:140px;" title="${row.tindakan || ''}">${row.tindakan || '-'}</td>
+            <td class="text-center">
+              <button class="btn btn-outline-primary btn-sm py-0 px-2"
+                onclick='lihatDetailArsip(${JSON.stringify(row)})'>
+                <i class="bi bi-eye"></i>
+              </button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+        document.getElementById('arsipContent').style.display = 'block';
+        arsipSudahDimuat = true;
+        const btn = document.getElementById('btnMuatArsip');
+        btn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Dimuat';
+        btn.classList.replace('btn-outline-primary', 'btn-outline-success');
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('arsipLoading').style.display = 'none';
+        document.getElementById('arsipError').style.display = 'block';
+        document.getElementById('btnMuatArsip').disabled = false;
+      });
+  }
+
+  function lihatDetailArsip(row) {
+    const fields = [
+      ['Tanggal Kunjungan', row.tanggal],
+      ['Poli', row.poli],
+      ['Anamnesis', row.anamnesis],
+      ['Pemeriksaan Fisik', row.pemeriksaan_fisik],
+      ['Diagnosis', row.diagnosis],
+      ['Tindakan / Terapi', row.tindakan],
+      ['Resep Obat', row.resep],
+      ['Catatan', row.catatan],
+    ];
+    let html = '<dl class="row mb-0">';
+    fields.forEach(([label, val]) => {
+      html += `
+        <dt class="col-sm-4 text-muted fw-semibold">${label}</dt>
+        <dd class="col-sm-8">${val ? val.replace(/\n/g, '<br>') : '<span class="text-muted fst-italic">-</span>'}</dd>`;
+    });
+    html += '</dl>';
+    document.getElementById('modalDetailArsipBody').innerHTML = html;
+    new bootstrap.Modal(document.getElementById('modalDetailArsip')).show();
+  }
+</script>
+{% endblock %}

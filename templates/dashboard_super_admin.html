@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Super Admin{% endblock %}
+{% block page_title %}Dashboard Super Admin{% endblock %}
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="stat-card green">
+      <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+      <div class="stat-info">
+        <div class="stat-number">{{ stats.total_admin }}</div>
+        <div class="stat-label">Total Admin</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card blue">
+      <div class="stat-icon"><i class="bi bi-person-lines-fill"></i></div>
+      <div class="stat-info">
+        <div class="stat-number">{{ stats.total_pasien }}</div>
+        <div class="stat-label">Total Pasien</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card orange">
+      <div class="stat-icon"><i class="bi bi-calendar-check-fill"></i></div>
+      <div class="stat-info">
+        <div class="stat-number">{{ stats.kunjungan_hari_ini }}</div>
+        <div class="stat-label">Kunjungan Hari Ini</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card teal">
+      <div class="stat-icon"><i class="bi bi-check-circle-fill"></i></div>
+      <div class="stat-info">
+        <div class="stat-number">{{ stats.kunjungan_selesai }}</div>
+        <div class="stat-label">Selesai Hari Ini</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-semibold"><i class="bi bi-lightning-fill text-warning me-2"></i>Aksi Cepat</div>
+      <div class="card-body d-grid gap-2">
+        <a href="{{ url_for('admin_tambah') }}" class="btn btn-outline-primary"><i class="bi bi-person-plus-fill me-2"></i>Tambah Admin Baru</a>
+        <a href="{{ url_for('admin_list') }}" class="btn btn-outline-secondary"><i class="bi bi-people-fill me-2"></i>Kelola Admin</a>
+        <a href="{{ url_for('pasien_list') }}" class="btn btn-outline-info"><i class="bi bi-person-lines-fill me-2"></i>Lihat Data Pasien</a>
+        <a href="{{ url_for('arsip_rm') }}" class="btn btn-outline-success"><i class="bi bi-archive-fill me-2"></i>Arsip Rekam Medis</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-semibold"><i class="bi bi-info-circle-fill text-info me-2"></i>Info Akun Default</div>
+      <div class="card-body">
+        <table class="table table-sm">
+          <thead><tr><th>Role</th><th>Username</th><th>Password</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge bg-danger">Super Admin</span></td><td>superadmin</td><td>admin123</td></tr>
+            <tr><td><span class="badge bg-primary">Loket</span></td><td>loket1</td><td>loket123</td></tr>
+            <tr><td><span class="badge bg-warning text-dark">Cek Vital</span></td><td>cekvi1</td><td>cekvi123</td></tr>
+            <tr><td><span class="badge bg-success">Poli</span></td><td>dokter1</td><td>dokter123</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

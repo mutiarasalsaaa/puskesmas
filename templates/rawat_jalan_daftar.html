@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}Daftarkan Rawat Jalan{% endblock %}
+{% block page_title %}Daftarkan Rawat Jalan{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-clipboard2-plus-fill me-2 text-success"></i>Form Pendaftaran Rawat Jalan
+      </div>
+      <div class="card-body">
+        <form method="POST" id="formRawatJalan">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Cari Pasien <span class="text-danger">*</span></label>
+            <input type="text" id="searchPasien" class="form-control" placeholder="Ketik nama, NIK, atau No. RM..." autocomplete="off">
+            <div id="searchResults" class="search-dropdown d-none"></div>
+            <input type="hidden" name="pasien_id" id="pasienId" required>
+          </div>
+
+          <div id="pasienInfo" class="alert alert-info d-none mb-3">
+            <strong><i class="bi bi-person-check-fill me-2"></i><span id="pNama"></span></strong><br>
+            <small>No. RM: <span id="pRm"></span> | NIK: <span id="pNik"></span> | Tgl Lahir: <span id="pTgl"></span></small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Poli Tujuan <span class="text-danger">*</span></label>
+            <select name="poli" class="form-select" required>
+              <option value="">-- Pilih Poli --</option>
+              <option value="Umum">Poli Umum</option>
+              <option value="Gigi">Poli Gigi</option>
+              <option value="KIA">Poli KIA (Ibu & Anak)</option>
+              <option value="Lansia">Poli Lansia</option>
+              <option value="Jiwa">Poli Jiwa</option>
+              <option value="TB">Poli TB/Paru</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Keluhan Utama</label>
+            <textarea name="keluhan" class="form-control" rows="3" placeholder="Deskripsi keluhan pasien..."></textarea>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-circle-fill me-2"></i>Daftarkan
+            </button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Batal
+            </a>
+            <a href="{{ url_for('pasien_tambah') }}" class="btn btn-outline-success ms-auto">
+              <i class="bi bi-person-plus-fill me-2"></i>Pasien Baru
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const searchInput = document.getElementById('searchPasien');
+const dropdown = document.getElementById('searchResults');
+const pasienId = document.getElementById('pasienId');
+const pasienInfo = document.getElementById('pasienInfo');
+let debounceTimer;
+
+// Pre-fill if pasien_id passed via URL
+const urlParams = new URLSearchParams(window.location.search);
+const preId = urlParams.get('pasien_id');
+if (preId) {
+  fetch(`/api/pasien/search?q=`)
+    .then(r => r.json())
+    .then(data => {
+      const p = data.find(x => String(x.id) === preId);
+      if (p) fillPasien(p);
+    });
+}
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  const q = searchInput.value.trim();
+  if (q.length < 2) { dropdown.classList.add('d-none'); return; }
+  debounceTimer = setTimeout(() => {
+    fetch(`/api/pasien/search?q=${encodeURIComponent(q)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.length) {
+          dropdown.innerHTML = '<div class="search-item text-muted">Tidak ditemukan</div>';
+        } else {
+          dropdown.innerHTML = data.map(p =>
+            `<div class="search-item" onclick="fillPasien(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+              <strong>${p.nama}</strong>
+              <small class="text-muted ms-2">RM: ${p.no_rm} | NIK: ${p.nik}</small>
+            </div>`
+          ).join('');
+        }
+        dropdown.classList.remove('d-none');
+      });
+  }, 300);
+});
+
+function fillPasien(p) {
+  pasienId.value = p.id;
+  searchInput.value = p.nama;
+  dropdown.classList.add('d-none');
+  document.getElementById('pNama').textContent = p.nama;
+  document.getElementById('pRm').textContent = p.no_rm;
+  document.getElementById('pNik').textContent = p.nik;
+  document.getElementById('pTgl').textContent = p.tanggal_lahir;
+  pasienInfo.classList.remove('d-none');
+}
+
+document.addEventListener('click', e => {
+  if (!dropdown.contains(e.target) && e.target !== searchInput) {
+    dropdown.classList.add('d-none');
+  }
+});
+
+document.getElementById('formRawatJalan').addEventListener('submit', function(e) {
+  if (!pasienId.value) {
+    e.preventDefault();
+    alert('Pilih pasien terlebih dahulu dari daftar pencarian.');
+    searchInput.focus();
+  }
+});
+</script>
+{% endblock %}

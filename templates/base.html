@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistem Rawat Jalan Puskesmas{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <style>
+        html,
+        body{
+            height:100%;
+            margin:0;
+            padding:0;
+            overflow-x:hidden;
+        }
+
+        #wrapper{
+            min-height:100vh;
+            width:100%;
+        }
+
+        /* Sidebar */
+        .sidebar{
+            width:350px;
+            flex-shrink:0;
+        }
+
+        /* ── Brand fix: satu baris, teks kecil ── */
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-brand .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            object-fit: contain;
+        }
+
+        .sidebar-brand span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.3;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        /* Content Area */
+        #page-content{
+            flex:1;
+            width:100%;
+            min-width:0;
+            background:#f1f4f9;
+        }
+
+        .topbar{
+            height:80px;
+            background:#fff;
+            display:flex;
+            align-items:center;
+            padding:0 30px;
+            border-bottom:1px solid #dee2e6;
+        }
+
+        .topbar-title{
+            font-size:2rem;
+            font-weight:600;
+        }
+
+        .main-content{
+            width:100%;
+            padding:30px;
+        }
+
+        /* Paksa semua container jadi full width */
+        .container,
+        .container-fluid{
+            max-width:100% !important;
+            width:100% !important;
+            padding-left:0 !important;
+            padding-right:0 !important;
+        }
+
+        @media (max-width:992px){
+            .sidebar{
+                position:fixed;
+                left:-350px;
+                top:0;
+                bottom:0;
+                z-index:1050;
+                transition:.3s;
+            }
+
+            .sidebar.show{
+                left:0;
+            }
+
+            #page-content{
+                width:100%;
+            }
+
+            .main-content{
+                padding:15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+{% if session.get('admin_id') %}
+
+<div class="d-flex" id="wrapper">
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+
+        <div class="sidebar-brand">
+            <img src="{{ url_for('static', filename='Assets/LOGO.jpg') }}"
+                 alt="Logo Puskesmas"
+                 class="sidebar-logo">
+            <span>Puskesmas Ketanggungan</span>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">
+                {{ session.nama[0]|upper }}
+            </div>
+
+            <div>
+                <div class="user-name">
+                    {{ session.nama }}
+                </div>
+
+                <div class="user-role">
+                    {% if session.role == 'super_admin' %}
+                        Super Admin
+                    {% elif session.role == 'loket' %}
+                        Admin Loket
+                    {% elif session.role == 'cek_vital' %}
+                        Admin Cek Vital
+                    {% elif session.role == 'poli' %}
+                        Dokter / Poli
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i>
+                Dashboard
+            </a>
+
+            {% if session.role == 'super_admin' %}
+            <div class="nav-section">Admin</div>
+
+            <a href="{{ url_for('admin_list') }}"
+               class="nav-item {% if 'admin' in request.endpoint %}active{% endif %}">
+                <i class="bi bi-people-fill"></i>
+                Kelola Admin
+            </a>
+            {% endif %}
+
+            {% if session.role in ['super_admin','loket','cek_vital','poli'] %}
+            <div class="nav-section">Pasien</div>
+
+            <a href="{{ url_for('pasien_list') }}"
+               class="nav-item {% if request.endpoint == 'pasien_list' %}active{% endif %}">
+                <i class="bi bi-person-lines-fill"></i>
+                Data Pasien
+            </a>
+            {% endif %}
+
+            {% if session.role in ['super_admin','loket'] %}
+            <a href="{{ url_for('pasien_tambah') }}"
+               class="nav-item {% if request.endpoint == 'pasien_tambah' %}active{% endif %}">
+                <i class="bi bi-person-plus-fill"></i>
+                Daftar Pasien Baru
+            </a>
+
+            <a href="{{ url_for('rawat_jalan_daftar') }}"
+               class="nav-item {% if request.endpoint == 'rawat_jalan_daftar' %}active{% endif %}">
+                <i class="bi bi-clipboard2-plus-fill"></i>
+                Daftarkan Rawat Jalan
+            </a>
+            {% endif %}
+
+            {% if session.role in ['super_admin','poli'] %}
+            <div class="nav-section">Rekam Medis</div>
+
+            <a href="{{ url_for('arsip_rm') }}"
+               class="nav-item {% if request.endpoint == 'arsip_rm' %}active{% endif %}">
+                <i class="bi bi-archive-fill"></i>
+                Arsip Rekam Medis
+            </a>
+            {% endif %}
+
+            <div class="nav-section">Akun</div>
+
+            <a href="{{ url_for('logout') }}"
+               class="nav-item text-danger">
+                <i class="bi bi-box-arrow-left"></i>
+                Logout
+            </a>
+
+        </nav>
+
+    </div>
+
+    <!-- Content -->
+    <div id="page-content">
+
+        <header class="topbar">
+
+            <button class="btn btn-sm btn-light me-3" id="sidebarToggle">
+                <i class="bi bi-list fs-5"></i>
+            </button>
+
+            <div class="topbar-title">
+                {% block page_title %}Dashboard{% endblock %}
+            </div>
+
+            <div class="ms-auto text-muted small">
+                <i class="bi bi-calendar3 me-1"></i>
+                <span id="current-date"></span>
+            </div>
+
+        </header>
+
+        <main class="main-content">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for cat, msg in messages %}
+                    <div class="alert alert-{{ cat }} alert-dismissible fade show">
+                        {{ msg }}
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+
+        </main>
+
+    </div>
+
+</div>
+
+{% else %}
+    {% block auth_content %}{% endblock %}
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

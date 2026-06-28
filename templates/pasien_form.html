@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Daftarkan Pasien Baru{% endblock %}
+{% block page_title %}Daftarkan Pasien Baru{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-person-plus-fill me-2 text-success"></i>Form Pendaftaran Pasien Baru
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">NIK <span class="text-danger">*</span></label>
+              <input type="text" name="nik" class="form-control" placeholder="16 digit NIK" maxlength="16" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+              <input type="text" name="nama" class="form-control" placeholder="Nama sesuai KTP" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Tanggal Lahir <span class="text-danger">*</span></label>
+              <input type="date" name="tanggal_lahir" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
+              <select name="jenis_kelamin" class="form-select" required>
+                <option value="">-- Pilih --</option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">No. HP</label>
+              <input type="text" name="no_hp" class="form-control" placeholder="08xx-xxxx-xxxx">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Alamat</label>
+              <textarea name="alamat" class="form-control" rows="3" placeholder="Alamat lengkap"></textarea>
+            </div>
+          </div>
+          <hr>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-person-check-fill me-2"></i>Daftarkan Pasien
+            </button>
+            <a href="{{ url_for('pasien_list') }}" class="btn btn-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Batal
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

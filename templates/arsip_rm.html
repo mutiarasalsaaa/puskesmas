@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% set q = q|default('') %}
+{% set tahun = tahun|default('') %}
+{% set tahun_list = tahun_list|default([]) %}
+{% set rm_list = rm_list|default([]) %}
+
+<style>
+.arsip-wrapper{max-width:1100px;margin:0 auto;}
+.arsip-card{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);overflow:hidden;}
+.arsip-header{background:linear-gradient(135deg,#198754,#14532d);color:#fff;padding:1.1rem 1.5rem;}
+.arsip-header h3{margin:0;font-size:1.25rem;font-weight:600;}
+
+.filter-section{padding:1rem 1.5rem;border-bottom:1px solid #eef1ee;}
+.filter-section .form-label{margin-bottom:.25rem;font-size:.85rem;}
+
+.list-container{padding:.5rem 1.5rem 0;}
+
+.rm-card{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.85rem 0;border-bottom:1px solid #f0f0f0;}
+.rm-card:last-child{border-bottom:none;}
+.rm-left{display:flex;gap:.85rem;align-items:flex-start;min-width:0;}
+.rm-avatar{width:42px;height:42px;border-radius:50%;background:#e8f5ee;color:#198754;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rm-info{min-width:0;}
+.rm-name{font-weight:600;color:#212529;}
+.rm-meta{font-size:.85rem;color:#6c757d;margin-top:.15rem;}
+.badge-rm{background:#e8f5ee;color:#198754;font-weight:600;padding:.2rem .55rem;border-radius:6px;font-size:.78rem;}
+.rm-diagnosis{font-size:.85rem;color:#495057;margin-top:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:520px;}
+.rm-action{display:flex;gap:.4rem;flex-shrink:0;}
+
+.empty-state{text-align:center;padding:2.5rem 1rem;color:#9aa3ab;}
+.empty-state i{font-size:2.2rem;display:block;margin-bottom:.5rem;}
+
+.arsip-footer{padding:.85rem 1.5rem;background:#f8f9fa;border-top:1px solid #eef1ee;font-size:.9rem;}
+
+.modal-info{border:1px solid #e2e6ea;border-radius:8px;padding:1rem;background:#fafbfc;}
+.info-label{font-size:.75rem;color:#6c757d;}
+.info-value{font-weight:600;}
+.rm-section{margin-top:.75rem;}
+.rm-title{font-weight:600;background:#f2f4f3;padding:.45rem .7rem;border:1px solid #e2e6ea;border-radius:6px 6px 0 0;font-size:.85rem;}
+.rm-content{border:1px solid #e2e6ea;border-top:none;padding:.65rem .75rem;border-radius:0 0 6px 6px;font-size:.9rem;white-space:pre-line;}
+
+/* Vital Signs Grid */
+.vital-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-top:.5rem;}
+.vital-item{background:#f8f9fa;border:1px solid #e2e6ea;border-radius:8px;padding:.6rem .75rem;text-align:center;}
+.vital-item .v-label{font-size:.72rem;color:#6c757d;margin-bottom:.2rem;}
+.vital-item .v-value{font-size:1.05rem;font-weight:700;color:#198754;}
+.vital-section-title{font-weight:600;background:#e8f5ee;color:#198754;padding:.45rem .7rem;border:1px solid #c3e6cb;border-radius:6px 6px 0 0;font-size:.85rem;}
+.vital-section-body{border:1px solid #c3e6cb;border-top:none;padding:.75rem;border-radius:0 0 6px 6px;}
+</style>
+
+<div class="container-fluid py-4">
+  <div class="arsip-wrapper">
+    <div class="arsip-card">
+
+      <div class="arsip-header">
+        <h3><i class="bi bi-archive-fill me-2"></i>Arsip Rekam Medis</h3>
+      </div>
+
+      <div class="filter-section">
+        <form method="GET" class="row g-2 align-items-end">
+          <div class="col-md-5">
+            <label class="form-label fw-semibold">Cari Pasien</label>
+            <input type="text" name="q" class="form-control"
+              placeholder="Nama Pasien atau No. RM"
+              value="{{ q if q else '' }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label fw-semibold">Tahun</label>
+            <select name="tahun" class="form-select">
+              <option value="">Semua Tahun</option>
+              {% for y in tahun_list %}
+              <option value="{{ y }}" {% if tahun and tahun|string == y|string %}selected{% endif %}>{{ y }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-success flex-fill">
+                <i class="bi bi-search me-1"></i>Cari
+              </button>
+              <a href="{{ url_for('arsip_rm') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-clockwise"></i>
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="list-container">
+        {% for rm in rm_list %}
+        <div class="rm-card">
+          <div class="rm-left">
+            <div class="rm-avatar">{{ rm['pasien_nama'][0] }}</div>
+            <div class="rm-info">
+              <div class="rm-name">{{ rm['pasien_nama'] }}</div>
+              <div class="rm-meta">
+                <span class="badge-rm">{{ rm['no_rm'] }}</span>
+                <span class="ms-2"><i class="bi bi-calendar3"></i> {{ rm['tanggal'] }}</span>
+                <span class="ms-2"><i class="bi bi-hospital"></i> {{ rm['poli'] }}</span>
+              </div>
+              <div class="rm-diagnosis">{{ rm['diagnosis'] if rm['diagnosis'] else '-' }}</div>
+            </div>
+            
+          </div>
+          <div class="rm-action">
+            <button class="btn btn-outline-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#modalRM{{ rm['id'] }}"
+              title="Lihat Detail">
+              <i class="bi bi-eye-fill"></i>
+            </button>
+            <button class="btn btn-outline-success"
+              onclick="printRM('printArea{{ rm['id'] }}')"
+              title="Print">
+              <i class="bi bi-printer-fill"></i>
+            </button>
+          </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <i class="bi bi-inbox"></i>
+          <h5>Belum Ada Data Rekam Medis</h5>
+          <p class="text-muted">Data rekam medis akan muncul di sini.</p>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="arsip-footer">
+        Total Rekam Medis : <strong>{{ rm_list|length }}</strong>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{# ===================== MODAL DETAIL ===================== #}
+{% for rm in rm_list %}
+<div class="modal fade" id="modalRM{{ rm['id'] }}" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Rekam Medis - {{ rm['pasien_nama'] }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="printArea{{ rm['id'] }}">
+
+          <div class="text-center mb-4">
+            <h4>PUSKESMAS KETANGGUNGAN</h4>
+            <h5>REKAM MEDIS PASIEN</h5>
+            <hr>
+          </div>
+
+          {# --- Info Pasien --- #}
+          <div class="modal-info mb-4">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="info-label">Nama Pasien</div>
+                <div class="info-value">{{ rm['pasien_nama'] }}</div>
+              </div>
+              <div class="col-md-2">
+                <div class="info-label">No RM</div>
+                <div class="info-value">{{ rm['no_rm'] }}</div>
+              </div>
+              <div class="col-md-2">
+                <div class="info-label">Tanggal</div>
+                <div class="info-value">{{ rm['tanggal'] }}</div>
+              </div>
+              <div class="col-md-2">
+                <div class="info-label">Poli</div>
+                <div class="info-value">{{ rm['poli'] }}</div>
+              </div>
+              <div class="col-md-3">
+                <div class="info-label">No Antrian</div>
+                <div class="info-value">{{ rm['no_antrian'] }}</div>
+              </div>
+            </div>
+          </div>
+
+          {# --- Tanda Vital --- #}
+          {% if rm['vital'] %}
+          <div class="rm-section">
+            <div class="vital-section-title">
+              <i class="bi bi-activity me-1"></i>Tanda Vital
+            </div>
+            <div class="vital-section-body">
+              <div class="vital-grid">
+                <div class="vital-item">
+                  <div class="v-label">Tekanan Darah</div>
+                  <div class="v-value">{{ rm['vital']['tekanan_darah'] or '-' }} <small style="font-size:.7rem;font-weight:400;">mmHg</small></div>
+                </div>
+                <div class="vital-item">
+                  <div class="v-label">Nadi</div>
+                  <div class="v-value">{{ rm['vital']['nadi'] or '-' }} <small style="font-size:.7rem;font-weight:400;">bpm</small></div>
+                </div>
+                <div class="vital-item">
+                  <div class="v-label">Suhu</div>
+                  <div class="v-value">{{ rm['vital']['suhu'] or '-' }} <small style="font-size:.7rem;font-weight:400;">°C</small></div>
+                </div>
+                <div class="vital-item">
+                  <div class="v-label">SpO₂</div>
+                  <div class="v-value">{{ rm['vital']['saturasi_o2'] or '-' }} <small style="font-size:.7rem;font-weight:400;">%</small></div>
+                </div>
+                <div class="vital-item">
+                  <div class="v-label">Berat Badan</div>
+                  <div class="v-value">{{ rm['vital']['berat_badan'] or '-' }} <small style="font-size:.7rem;font-weight:400;">kg</small></div>
+                </div>
+                <div class="vital-item">
+                  <div class="v-label">Tinggi Badan</div>
+                  <div class="v-value">{{ rm['vital']['tinggi_badan'] or '-' }} <small style="font-size:.7rem;font-weight:400;">cm</small></div>
+                </div>
+              </div>
+              {% if rm['vital'].get('catatan') %}
+              <div class="mt-2 p-2 bg-light rounded">
+                <small><strong>Catatan Vital:</strong> {{ rm['vital']['catatan'] }}</small>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+
+          {# --- Isi Rekam Medis --- #}
+          {% for field, label in [
+            ('anamnesis','Anamnesis'),
+            ('pemeriksaan_fisik','Pemeriksaan Fisik'),
+            ('diagnosis','Diagnosis'),
+            ('tindakan','Tindakan / Terapi'),
+            ('resep','Resep Obat'),
+            ('catatan','Catatan')
+          ] %}
+          {% if rm[field] %}
+          <div class="rm-section">
+            <div class="rm-title">{{ label }}</div>
+            <div class="rm-content">{{ rm[field] }}</div>
+          </div>
+          {% endif %}
+          {% endfor %}
+
+          <hr class="mt-5">
+          <div class="row mt-5">
+            <div class="col-6 text-center">
+              Mengetahui,<br><br><br><br><br>
+              __________________________<br>
+              Petugas Puskesmas
+            </div>
+            <div class="col-6 text-center">
+              Ketanggungan, {{ rm['tanggal'] }}<br><br><br><br><br>
+              __________________________<br>
+              Dokter Pemeriksa
+            </div>
+          </div>
+
+        </div>{# end printArea #}
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" onclick="printRM('printArea{{ rm['id'] }}')">
+          <i class="bi bi-printer-fill me-1"></i>Print
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<script>
+function printRM(id) {
+  let isi = document.getElementById(id).innerHTML;
+  let win = window.open('', '', 'width=1200,height=900');
+  win.document.write(`
+  <html>
+  <head>
+    <title>Rekam Medis Pasien</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 30px; color: #000; line-height: 1.5; }
+      hr { border: none; border-top: 2px solid #000; margin: 15px 0 25px; }
+      .modal-info { border: 1px solid #ccc; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+      .row { display: flex; flex-wrap: wrap; }
+      .col-2 { width: 16.66%; } .col-3 { width: 25%; } .col-6 { width: 50%; }
+      .info-label { font-size: 12px; color: #666; }
+      .info-value { font-weight: bold; margin-bottom: 10px; }
+      .vital-section-title { font-weight: bold; background: #e8f5ee; color: #198754; padding: 8px 10px; border: 1px solid #c3e6cb; margin-top: 10px; }
+      .vital-section-body { border: 1px solid #c3e6cb; border-top: none; padding: 10px; margin-bottom: 10px; }
+      .vital-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .vital-item { background: #f8f9fa; border: 1px solid #ddd; border-radius: 6px; padding: 8px; text-align: center; }
+      .v-label { font-size: 11px; color: #666; }
+      .v-value { font-size: 15px; font-weight: bold; color: #198754; }
+      .rm-title { font-weight: bold; background: #f2f2f2; padding: 8px 10px; border: 1px solid #ddd; margin-top: 10px; }
+      .rm-content { border: 1px solid #ddd; border-top: none; padding: 10px; margin-bottom: 10px; }
+      .text-center { text-align: center; }
+    </style>
+  </head>
+  <body>${isi}</body>
+  </html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); win.close(); }, 700);
+}
+</script>
+
+{% endblock %}

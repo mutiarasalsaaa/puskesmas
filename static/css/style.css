@@ -1,0 +1,496 @@
+/* ============================
+   VARIABLES & BASE
+   ============================ */
+
+:root{
+    --sidebar-width:260px;
+    --sidebar-bg:#1a2e1f;
+    --sidebar-text:#a0bca8;
+    --sidebar-active:#198754;
+    --topbar-h:70px;
+    --primary:#198754;
+    --primary-light:#e8f5ee;
+    --primary-dark:#14532d;
+    --primary-hover:#157347;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    height:100%;
+    font-family:'Segoe UI',sans-serif;
+    background:#f0f7f3;
+    overflow-x:hidden;
+}
+
+/* ============================
+   LOGIN
+   ============================ */
+
+.login-body{
+    background:linear-gradient(
+        135deg,
+        #1a2e1f 0%,
+        #2d5c3a 50%,
+        #1a2e1f 100%
+    );
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.login-container{
+    width:100%;
+    max-width:420px;
+    padding:1rem;
+}
+
+.login-card{
+    background:#fff;
+    border-radius:16px;
+    padding:2.5rem;
+    box-shadow:0 20px 60px rgba(25,135,84,.25);
+}
+
+.login-header{
+    text-align:center;
+    margin-bottom:2rem;
+}
+
+.login-icon{
+    font-size:3rem;
+    color:var(--primary);
+    margin-bottom:.5rem;
+}
+
+.login-header h4{
+    font-weight:700;
+    color:#1a2e1f;
+}
+
+.login-footer{
+    margin-top:1rem;
+    text-align:center;
+}
+
+/* ============================
+   LAYOUT
+   ============================ */
+
+#wrapper{
+    display:flex;
+    min-height:100vh;
+    width:100%;
+}
+
+/* ============================
+   SIDEBAR
+   ============================ */
+
+.sidebar{
+    width:var(--sidebar-width);
+    min-width:var(--sidebar-width);
+    background:var(--sidebar-bg);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    flex-shrink:0;
+    overflow-y:auto;
+}
+
+
+.sidebar-brand{
+    display:flex;
+    align-items:center;
+    padding:1.5rem;
+    font-size:1.6rem;
+    font-weight:700;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.sidebar-logo{
+    width:42px;
+    height:42px;
+    object-fit:contain;
+    margin-right:12px;
+}
+.sidebar-brand i{
+    color:#4ade80;
+}
+
+.sidebar-user{
+    display:flex;
+    align-items:center;
+    gap:.75rem;
+    padding:1.25rem 1.5rem;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    background:rgba(25,135,84,.12);
+}
+
+.user-avatar{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight:700;
+    flex-shrink:0;
+    box-shadow:0 2px 8px rgba(25,135,84,.4);
+}
+
+.user-name{
+    font-weight:600;
+    color:#fff;
+}
+
+.user-role{
+    color:var(--sidebar-text);
+    font-size:.85rem;
+}
+
+.sidebar-nav{
+    padding:1rem 0;
+}
+
+.nav-section{
+    padding:.75rem 1.5rem .3rem;
+    color:rgba(255,255,255,.35);
+    font-size:.75rem;
+    text-transform:uppercase;
+    font-weight:600;
+    letter-spacing:1px;
+}
+
+.nav-item{
+    display:flex;
+    align-items:center;
+    gap:.75rem;
+    padding:.9rem 1.5rem;
+    text-decoration:none;
+    color:var(--sidebar-text);
+    transition:.2s;
+    border-left:4px solid transparent;
+}
+
+.nav-item:hover{
+    background:rgba(25,135,84,.15);
+    color:#4ade80;
+}
+
+.nav-item.active{
+    background:rgba(25,135,84,.25);
+    color:#4ade80;
+    border-left-color:#4ade80;
+}
+
+.nav-item i{
+    width:20px;
+}
+
+/* ============================
+   PAGE CONTENT
+   ============================ */
+
+#page-content{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+}
+
+/* ============================
+   TOPBAR
+   ============================ */
+
+.topbar{
+    height:var(--topbar-h);
+    background:#fff;
+    border-bottom:2px solid #c3e6cb;
+    display:flex;
+    align-items:center;
+    padding:0 1.5rem;
+    position:sticky;
+    top:0;
+    z-index:10;
+    box-shadow:0 2px 8px rgba(25,135,84,.08);
+}
+
+.topbar-title{
+    font-size:1.8rem;
+    font-weight:600;
+    color:#14532d;
+}
+
+/* ============================
+   MAIN CONTENT
+   ============================ */
+
+.main-content{
+    flex:1;
+    padding:2rem;
+    width:100%;
+}
+
+/* paksa full width */
+.container,
+.container-fluid{
+    max-width:100% !important;
+}
+
+/* ============================
+   CARD
+   ============================ */
+
+.card{
+    border:none;
+    border-radius:16px;
+    box-shadow:0 2px 12px rgba(25,135,84,.08);
+}
+
+.card-header{
+    border-bottom:1px solid #d1e7dd;
+    background:#fff;
+    padding:1rem 1.5rem;
+    border-radius:16px 16px 0 0 !important;
+}
+
+/* ============================
+   TABLE
+   ============================ */
+
+.table{
+    margin-bottom:0;
+}
+
+.table th{
+    font-size:.85rem;
+    font-weight:600;
+    text-transform:uppercase;
+    color:#198754;
+    background:#f0f7f3;
+}
+
+.table td{
+    vertical-align:middle;
+}
+
+.table-hover tbody tr:hover{
+    background:#f0f7f3;
+}
+
+/* ============================
+   BUTTONS
+   ============================ */
+
+.btn{
+    border-radius:10px;
+}
+
+.btn-primary{
+    background:var(--primary);
+    border-color:var(--primary);
+}
+
+.btn-primary:hover{
+    background:var(--primary-hover);
+    border-color:var(--primary-hover);
+}
+
+.btn-success{
+    background:var(--primary);
+    border-color:var(--primary);
+}
+
+.btn-success:hover{
+    background:var(--primary-hover);
+    border-color:var(--primary-hover);
+}
+
+.btn-outline-success{
+    color:var(--primary);
+    border-color:var(--primary);
+}
+
+.btn-outline-success:hover{
+    background:var(--primary);
+    border-color:var(--primary);
+}
+
+/* ============================
+   STAT CARD
+   ============================ */
+
+.stat-card{
+    border-radius:16px;
+    padding:1.5rem;
+    display:flex;
+    gap:1rem;
+    align-items:center;
+    color:#fff;
+}
+
+.stat-card.green{
+    background:linear-gradient(135deg,#198754,#14532d);
+    box-shadow:0 4px 15px rgba(25,135,84,.35);
+}
+
+.stat-card.blue{
+    background:linear-gradient(135deg,#0d9e6e,#065f46);
+    box-shadow:0 4px 15px rgba(13,158,110,.35);
+}
+
+.stat-card.orange{
+    background:linear-gradient(135deg,#20c997,#0d9e6e);
+    box-shadow:0 4px 15px rgba(32,201,151,.35);
+}
+
+.stat-card.red{
+    background:linear-gradient(135deg,#198754,#0a3d20);
+    box-shadow:0 4px 15px rgba(25,135,84,.4);
+}
+
+.stat-card.teal{
+    background:linear-gradient(135deg,#25a270,#14532d);
+    box-shadow:0 4px 15px rgba(37,162,112,.35);
+}
+
+.stat-icon{
+    font-size:2.5rem;
+    opacity:.9;
+}
+
+.stat-number{
+    font-size:2rem;
+    font-weight:700;
+}
+
+.stat-label{
+    font-size:.85rem;
+    opacity:.9;
+}
+
+/* ============================
+   PATIENT AVATAR
+   ============================ */
+
+.patient-avatar,
+.patient-avatar-sm{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight:700;
+    border-radius:50%;
+    background:linear-gradient(
+        135deg,
+        var(--primary),
+        var(--primary-dark)
+    );
+    box-shadow:0 2px 8px rgba(25,135,84,.35);
+}
+
+.patient-avatar{
+    width:72px;
+    height:72px;
+    font-size:2rem;
+}
+
+.patient-avatar-sm{
+    width:48px;
+    height:48px;
+    font-size:1.2rem;
+}
+
+/* ============================
+   BADGE & FORM
+   ============================ */
+
+.badge.bg-success,
+.badge.bg-primary{
+    background:var(--primary) !important;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#86c9a4;
+    box-shadow:0 0 0 .25rem rgba(25,135,84,.18);
+}
+
+.form-check-input:checked{
+    background-color:var(--primary);
+    border-color:var(--primary);
+}
+
+/* ============================
+   ALERT
+   ============================ */
+
+.alert-success{
+    background:#d1e7dd;
+    border-color:#a3cfbb;
+    color:#0a3622;
+}
+
+/* ============================
+   VITAL BOX (rekam medis)
+   ============================ */
+
+.vital-box{
+    background:var(--primary-light);
+    border:1px solid #c3e6cb;
+    border-radius:10px;
+    padding:.6rem .5rem;
+}
+
+.vital-value{
+    font-size:1.1rem;
+    font-weight:700;
+    color:var(--primary);
+}
+
+.vital-label{
+    font-size:.72rem;
+    color:#6c757d;
+    margin-top:.15rem;
+}
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+
+@media(max-width:768px){
+
+    .sidebar{
+        position:fixed;
+        left:-260px;
+        top:0;
+        bottom:0;
+        z-index:999;
+        transition:.3s;
+    }
+
+    .sidebar.open{
+        left:0;
+    }
+
+    #page-content{
+        width:100%;
+    }
+
+    .main-content{
+        padding:1rem;
+    }
+
+    .topbar-title{
+        font-size:1.2rem;
+    }
+}

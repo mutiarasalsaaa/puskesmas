@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% block title %}Data Pasien{% endblock %}
+{% block page_title %}Data Pasien{% endblock %}
+
+{% block content %}
+
+<style>
+html, body{
+    height:100%;
+}
+
+.main-content{
+    padding:1.75rem;
+}
+
+.dashboard-wrapper{
+    display:flex;
+    flex-direction:column;
+}
+
+.card-pasien{
+    border:none;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 4px 15px rgba(0,0,0,.05);
+}
+
+.card-header{
+    padding:1rem 1.25rem;
+}
+
+.card-header span{
+    font-size:1.1rem;
+}
+
+.card-body{
+    background:#fff;
+}
+
+.table-responsive{
+    max-height:550px;
+    overflow-y:auto;
+}
+
+.table-responsive::-webkit-scrollbar{
+    width:8px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb{
+    background:#cfd8dc;
+    border-radius:10px;
+}
+
+.table thead th{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:#f8f9fa;
+    font-weight:600;
+}
+
+.table td,
+.table th{
+    vertical-align:middle;
+}
+
+.badge{
+    font-size:.85rem;
+}
+
+.card-footer{
+    background:#fff;
+    border-top:1px solid #e9ecef;
+}
+
+.search-box .form-control{
+    border-radius:12px;
+}
+
+.search-box .btn{
+    border-radius:12px;
+}
+</style>
+
+<div class="dashboard-wrapper">
+
+    <div class="card card-pasien">
+
+        <!-- Header -->
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+
+            <span class="fw-semibold">
+                <i class="bi bi-person-lines-fill me-2 text-success"></i>
+                Daftar Pasien
+            </span>
+
+            {% if session.role in ['super_admin', 'loket'] %}
+            <a href="{{ url_for('pasien_tambah') }}"
+               class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg me-1"></i>
+                Pasien Baru
+            </a>
+            {% endif %}
+
+        </div>
+
+        <!-- Search -->
+        <div class="card-body py-3 border-top border-bottom">
+
+            <form method="GET"
+                  class="d-flex gap-2 search-box">
+
+                <input type="text"
+                       name="q"
+                       class="form-control"
+                       placeholder="Cari nama, NIK, atau No. RM..."
+                       value="{{ q }}">
+
+                <button type="submit"
+                        class="btn btn-outline-primary px-4">
+                    <i class="bi bi-search"></i>
+                </button>
+
+                {% if q %}
+                <a href="{{ url_for('pasien_list') }}"
+                   class="btn btn-outline-secondary">
+                    Reset
+                </a>
+                {% endif %}
+
+            </form>
+
+        </div>
+
+        <!-- Table -->
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th width="60">#</th>
+                            <th width="120">NO. RM</th>
+                            <th>NAMA</th>
+                            <th>NIK</th>
+                            <th width="140">TGL LAHIR</th>
+                            <th width="180">JENIS KELAMIN</th>
+                            <th width="150">NO. HP</th>
+                            <th width="120">AKSI</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for p in pasien %}
+
+                        <tr>
+
+                            <td>{{ loop.index }}</td>
+
+                            <td>
+                                <span class="badge bg-secondary">
+                                    {{ p['no_rm'] }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <strong>{{ p['nama'] }}</strong>
+                            </td>
+
+                            <td>{{ p['nik'] }}</td>
+
+                            <td>{{ p['tanggal_lahir'] }}</td>
+
+                            <td>
+                                {% if p['jenis_kelamin'] == 'Laki-laki' %}
+                                    <span class="text-primary">
+                                        <i class="bi bi-gender-male"></i>
+                                        Laki-laki
+                                    </span>
+                                {% else %}
+                                    <span class="text-danger">
+                                        <i class="bi bi-gender-female"></i>
+                                        Perempuan
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ p['no_hp'] or '-' }}</td>
+
+                            <td>
+
+                                <a href="{{ url_for('pasien_detail', id=p['id']) }}"
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+
+                                {% if session.role in ['super_admin', 'loket'] %}
+                                <a href="{{ url_for('rawat_jalan_daftar') }}?pasien_id={{ p['id'] }}"
+                                   class="btn btn-sm btn-outline-success ms-1">
+                                    <i class="bi bi-clipboard2-plus-fill"></i>
+                                </a>
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+
+                            <td colspan="8"
+                                class="text-center text-muted py-5">
+
+                                {% if q %}
+                                    Tidak ditemukan hasil untuk "{{ q }}"
+                                {% else %}
+                                    Belum ada data pasien
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="card-footer text-muted small">
+
+            Total :
+            <strong>{{ pasien|length }}</strong>
+            pasien
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

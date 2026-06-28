@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if action == 'edit' else 'Tambah' }} Admin{% endblock %}
+{% block page_title %}{{ 'Edit' if action == 'edit' else 'Tambah' }} Admin{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-person-fill me-2 text-primary"></i>
+        {{ 'Edit Data Admin' if action == 'edit' else 'Tambah Admin Baru' }}
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          {% if action == 'edit' %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Username</label>
+            <input type="text" class="form-control" value="{{ admin['username'] }}" disabled>
+            <small class="text-muted">Username tidak dapat diubah.</small>
+          </div>
+          {% else %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+            <input type="text" name="username" class="form-control" placeholder="cth: loket1" required>
+          </div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+            <input type="text" name="nama" class="form-control"
+              value="{{ admin['nama'] if action == 'edit' else '' }}"
+              placeholder="Nama lengkap admin" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Role <span class="text-danger">*</span></label>
+            <select name="role" class="form-select" required>
+              <option value="">-- Pilih Role --</option>
+              <option value="loket" {% if action == 'edit' and admin['role'] == 'loket' %}selected{% endif %}>Admin Loket (Pendaftaran)</option>
+              <option value="cek_vital" {% if action == 'edit' and admin['role'] == 'cek_vital' %}selected{% endif %}>Admin Cek Vital</option>
+              <option value="poli" {% if action == 'edit' and admin['role'] == 'poli' %}selected{% endif %}>Dokter / Poli</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              Password {% if action != 'edit' %}<span class="text-danger">*</span>{% endif %}
+            </label>
+            <input type="password" name="password" class="form-control"
+              placeholder="{{ 'Kosongkan jika tidak ingin mengubah' if action == 'edit' else 'Minimal 6 karakter' }}"
+              {% if action != 'edit' %}required minlength="6"{% endif %}>
+          </div>
+
+          {% if action == 'edit' %}
+          <div class="mb-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" name="aktif" id="aktif"
+                {{ 'checked' if admin['aktif'] }}>
+              <label class="form-check-label" for="aktif">Admin Aktif</label>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save-fill me-2"></i>Simpan
+            </button>
+            <a href="{{ url_for('admin_list') }}" class="btn btn-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Batal
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

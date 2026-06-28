@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Input Cek Vital{% endblock %}
+{% block page_title %}Input Cek Vital{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="d-flex align-items-center gap-3">
+          <div class="patient-avatar-sm">{{ kunjungan['pasien_nama'][0]|upper }}</div>
+          <div>
+            <h5 class="mb-0">{{ kunjungan['pasien_nama'] }}</h5>
+            <small class="text-muted">
+              No. RM: <strong>{{ kunjungan['no_rm'] }}</strong> |
+              {{ kunjungan['jenis_kelamin'] }} |
+              Lahir: {{ kunjungan['tanggal_lahir'] }}
+            </small>
+          </div>
+          <div class="ms-auto text-end">
+            <span class="badge bg-warning text-dark fs-6">{{ kunjungan['no_antrian'] }}</span><br>
+            <small class="text-muted">Poli {{ kunjungan['poli'] }}</small>
+          </div>
+        </div>
+        {% if kunjungan['keluhan'] %}
+        <div class="mt-3 p-2 bg-light rounded">
+          <small><strong>Keluhan:</strong> {{ kunjungan['keluhan'] }}</small>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-heart-pulse-fill me-2 text-danger"></i>Pemeriksaan Tanda Vital
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Tekanan Darah (mmHg)</label>
+              <input type="text" name="tekanan_darah" class="form-control" placeholder="cth: 120/80">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Suhu Tubuh (°C)</label>
+              <input type="number" name="suhu" class="form-control" placeholder="cth: 36.5" step="0.1" min="30" max="45">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Berat Badan (kg)</label>
+              <input type="number" name="berat_badan" class="form-control" placeholder="cth: 60.5" step="0.1" min="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Tinggi Badan (cm)</label>
+              <input type="number" name="tinggi_badan" class="form-control" placeholder="cth: 165" step="0.1" min="0">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Catatan Tambahan</label>
+              <textarea name="catatan" class="form-control" rows="2" placeholder="Catatan tambahan (opsional)..."></textarea>
+            </div>
+          </div>
+          <hr>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger">
+              <i class="bi bi-save-fill me-2"></i>Simpan &amp; Kirim ke Poli
+            </button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Batal
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
