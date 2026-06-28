@@ -123,6 +123,9 @@ def init_db():
         print("Database berhasil diinisialisasi.")
     db.close()
 
+# ── Panggil init_db() di sini agar Gunicorn juga menjalankannya ──
+init_db()
+
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -356,7 +359,7 @@ def rekam_medis(kunjungan_id):
         return redirect(url_for('dashboard'))
     vital = query("SELECT * FROM cek_vital WHERE kunjungan_id=?", (kunjungan_id,), one=True)
     rm    = query("SELECT * FROM rekam_medis WHERE kunjungan_id=?", (kunjungan_id,), one=True)
-    
+
     if request.method == 'POST':
         vals = tuple(request.form.get(f,'') for f in ('anamnesis','pemeriksaan_fisik','diagnosis','tindakan','resep','catatan'))
         if rm:
@@ -462,7 +465,6 @@ def api_pasien_search():
     return jsonify([dict(r) for r in rows])
 
 if __name__ == '__main__':
-    init_db()
     print("\n" + "="*50)
     print("  Sistem Rawat Jalan Puskesmas")
     print("  Buka: http://localhost:5000")
