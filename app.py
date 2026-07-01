@@ -8,6 +8,9 @@ from flask import (Flask, render_template, request, redirect,
                    url_for, session, flash, jsonify, g)
 
 app = Flask(__name__)
+@app.route("/health")
+def health():
+    return "OK", 200
 app.secret_key = 'puskesmas-rahasia-2024-ganti-di-produksi'
 
 DATABASE = os.path.join(os.path.dirname(__file__), 'puskesmas.db')
